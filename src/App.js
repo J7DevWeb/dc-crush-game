@@ -10,10 +10,12 @@ function App() {
 
   const width = 8;
   const characterTokens =[batman, superman, aquaman, wonderWoman, flash, cyborg];
-  const[currentTokenDisplay, setCurrentTokenDisplay] =useState([]);
+  const[currentTokenDisplay, setCurrentTokenDisplay] = useState([]);
+  const[tokenDraged, setTokenDraged] = useState(null);
+  const[tokenTargeted, setTokenTargeted] = useState(null);
 
   const checkColumnOfFour = () => {
-    for (let i = 0; i < 39; i++){
+    for (let i = 0; i <= 39; i++){
       const columnOfFour = [i, i + width, i + width * 2, i + width * 3];
       const choosenColor = currentTokenDisplay[i];
 
@@ -38,7 +40,7 @@ function App() {
   };
 
   const checkColumnOfThree = () => {
-    for (let i = 0; i < 47; i++){
+    for (let i = 0; i <= 47; i++){
       const columnOfThree = [i, i + width, i + width * 2];
       const choosenColor = currentTokenDisplay[i];
 
@@ -63,7 +65,7 @@ function App() {
   };
 
   const movingIntoCaseBelow = () => {
-    for (let i = 0; i < 64 - width; i++){
+    for (let i = 0; i <= 64 - width; i++){
       const firstRow = [0, 1, 2, 3, 4, 5, 6, 7];
       const isFirstRow = firstRow.includes(i);
 
@@ -77,6 +79,24 @@ function App() {
         currentTokenDisplay[i] = '';
       }
     }
+  };
+
+  const dragStart = (e) => {
+    setTokenDraged(e.target);
+  };
+
+  const dragDrop = (e) => {
+    setTokenTargeted(e.target);
+  };
+
+  const dragEnd = () => {
+    const tokenDragedId = parseInt(tokenDraged.getAttribute('data-id'));
+    const tokenTargetedId = parseInt(tokenTargeted.getAttribute('data-id'));
+
+    currentTokenDisplay[tokenTargetedId] = tokenDraged.src;
+    currentTokenDisplay[tokenDragedId] = tokenTargeted.src;
+
+    
   };
 
   const boardGame = () => {
@@ -109,7 +129,7 @@ function App() {
       <div className="game-board">
         {currentTokenDisplay.map((characterToken, index) => (
           <div className="case">
-            <img key={index} src={characterToken} alt={characterToken}/>
+            <img key={index} data-id={index} onDrop={dragDrop} onDragStart={dragStart} onDragEnd={dragEnd} draggable={true} onDragOver={(e) => e.preventDefault()} onDragEnter={(e) => e.preventDefault()} onDragLeave={(e) => e.preventDefault()} src={characterToken} alt={characterToken}/>
           </div>
         ))}
       </div>

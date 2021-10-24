@@ -15,12 +15,13 @@ function App() {
   const[tokenTargeted, setTokenTargeted] = useState(null);
 
   const checkColumnOfFour = () => {
-    for (let i = 0; i <= 39; i++){
+    for (let i = 0; i < 39; i++){
       const columnOfFour = [i, i + width, i + width * 2, i + width * 3];
       const choosenColor = currentTokenDisplay[i];
 
       if (columnOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         columnOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
@@ -35,17 +36,19 @@ function App() {
 
       if (rowOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         rowOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
 
   const checkColumnOfThree = () => {
-    for (let i = 0; i <= 47; i++){
+    for (let i = 0; i < 47; i++){
       const columnOfThree = [i, i + width, i + width * 2];
       const choosenColor = currentTokenDisplay[i];
 
       if (columnOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         columnOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
@@ -60,12 +63,13 @@ function App() {
 
       if (rowOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         rowOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
 
   const movingIntoCaseBelow = () => {
-    for (let i = 0; i <= 64 - width; i++){
+    for (let i = 0; i < 64 - width; i++){
       const firstRow = [0, 1, 2, 3, 4, 5, 6, 7];
       const isFirstRow = firstRow.includes(i);
 
@@ -93,10 +97,30 @@ function App() {
     const tokenDragedId = parseInt(tokenDraged.getAttribute('data-id'));
     const tokenTargetedId = parseInt(tokenTargeted.getAttribute('data-id'));
 
-    currentTokenDisplay[tokenTargetedId] = tokenDraged.src;
-    currentTokenDisplay[tokenDragedId] = tokenTargeted.src;
+    currentTokenDisplay[tokenTargetedId] = tokenDraged.getAttribute('src');
+    currentTokenDisplay[tokenDragedId] = tokenTargeted.getAttribute('src');
 
-    
+    const validMoves = [
+      tokenDragedId - 1,
+      tokenDragedId + 1,
+      tokenDragedId - width,
+      tokenDragedId + width,
+    ];
+
+    const validMove = validMoves.includes(tokenTargetedId);
+    const isColumnOfFour = checkColumnOfFour();
+    const isColumnOfThree = checkColumnOfThree();
+    const isRowOfFour = checkRowOfFour();
+    const isRowOfThree = checkRowOfThree();
+
+    if (tokenTargetedId && validMove && (isColumnOfFour || isColumnOfThree || isRowOfFour || isRowOfThree)){
+      setTokenDraged(null);
+      setTokenTargeted(null);
+    } else {
+      currentTokenDisplay[tokenTargetedId] = tokenTargeted.getAttribute('src');
+      currentTokenDisplay[tokenDragedId] = tokenDraged.getAttribute('src');
+      setCurrentTokenDisplay([...currentTokenDisplay]);
+    }
   };
 
   const boardGame = () => {

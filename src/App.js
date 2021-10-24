@@ -10,7 +10,9 @@ function App() {
 
   const width = 8;
   const characterTokens =[batman, superman, aquaman, wonderWoman, flash, cyborg];
-  const[currentTokenDisplay, setCurrentTokenDisplay] =useState([]);
+  const[currentTokenDisplay, setCurrentTokenDisplay] = useState([]);
+  const[tokenDraged, setTokenDraged] = useState(null);
+  const[tokenTargeted, setTokenTargeted] = useState(null);
 
   const checkColumnOfFour = () => {
     for (let i = 0; i < 39; i++){
@@ -19,6 +21,7 @@ function App() {
 
       if (columnOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         columnOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
@@ -33,6 +36,7 @@ function App() {
 
       if (rowOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         rowOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
@@ -44,6 +48,7 @@ function App() {
 
       if (columnOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         columnOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
     }
   };
@@ -58,7 +63,63 @@ function App() {
 
       if (rowOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
         rowOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        return true;
       }
+    }
+  };
+
+  const movingIntoCaseBelow = () => {
+    for (let i = 0; i < 64 - width; i++){
+      const firstRow = [0, 1, 2, 3, 4, 5, 6, 7];
+      const isFirstRow = firstRow.includes(i);
+
+      if (isFirstRow && currentTokenDisplay[i] === '') {
+        let randomIndex = Math.floor(Math.random() * characterTokens.length);
+        currentTokenDisplay[i] = characterTokens[randomIndex];
+      }
+
+      if ((currentTokenDisplay[i + width]) === '') {
+        currentTokenDisplay[i + width] = currentTokenDisplay[i];
+        currentTokenDisplay[i] = '';
+      }
+    }
+  };
+
+  const dragStart = (e) => {
+    setTokenDraged(e.target);
+  };
+
+  const dragDrop = (e) => {
+    setTokenTargeted(e.target);
+  };
+
+  const dragEnd = () => {
+    const tokenDragedId = parseInt(tokenDraged.getAttribute('data-id'));
+    const tokenTargetedId = parseInt(tokenTargeted.getAttribute('data-id'));
+
+    currentTokenDisplay[tokenTargetedId] = tokenDraged.getAttribute('src');
+    currentTokenDisplay[tokenDragedId] = tokenTargeted.getAttribute('src');
+
+    const validMoves = [
+      tokenDragedId - 1,
+      tokenDragedId + 1,
+      tokenDragedId - width,
+      tokenDragedId + width,
+    ];
+
+    const validMove = validMoves.includes(tokenTargetedId);
+    const isColumnOfFour = checkColumnOfFour();
+    const isColumnOfThree = checkColumnOfThree();
+    const isRowOfFour = checkRowOfFour();
+    const isRowOfThree = checkRowOfThree();
+
+    if (tokenTargetedId && validMove && (isColumnOfFour || isColumnOfThree || isRowOfFour || isRowOfThree)){
+      setTokenDraged(null);
+      setTokenTargeted(null);
+    } else {
+      currentTokenDisplay[tokenTargetedId] = tokenTargeted.getAttribute('src');
+      currentTokenDisplay[tokenDragedId] = tokenDraged.getAttribute('src');
+      setCurrentTokenDisplay([...currentTokenDisplay]);
     }
   };
 
@@ -81,17 +142,18 @@ function App() {
       checkRowOfFour();
       checkColumnOfThree();
       checkRowOfThree();
+      movingIntoCaseBelow();
       setCurrentTokenDisplay([...currentTokenDisplay]);
     },100);
     return () => clearInterval(timer);
-  }, [checkColumnOfFour, checkRowOfFour, checkColumnOfThree, checkRowOfThree, currentTokenDisplay]);
+  }, [checkColumnOfFour, checkRowOfFour, checkColumnOfThree, checkRowOfThree, movingIntoCaseBelow, currentTokenDisplay]);
 
   return (
     <div className="App">
       <div className="game-board">
         {currentTokenDisplay.map((characterToken, index) => (
           <div className="case">
-            <img key={index} src={characterToken} alt={characterToken}/>
+            <img key={index} data-id={index} onDrop={dragDrop} onDragStart={dragStart} onDragEnd={dragEnd} draggable={true} onDragOver={(e) => e.preventDefault()} onDragEnter={(e) => e.preventDefault()} onDragLeave={(e) => e.preventDefault()} src={characterToken} alt={characterToken}/>
           </div>
         ))}
       </div>

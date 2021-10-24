@@ -62,6 +62,23 @@ function App() {
     }
   };
 
+  const movingIntoCaseBelow = () => {
+    for (let i = 0; i < 64 - width; i++){
+      const firstRow = [0, 1, 2, 3, 4, 5, 6, 7];
+      const isFirstRow = firstRow.includes(i);
+
+      if (isFirstRow && currentTokenDisplay[i] === '') {
+        let randomIndex = Math.floor(Math.random() * characterTokens.length);
+        currentTokenDisplay[i] = characterTokens[randomIndex];
+      }
+
+      if ((currentTokenDisplay[i + width]) === '') {
+        currentTokenDisplay[i + width] = currentTokenDisplay[i];
+        currentTokenDisplay[i] = '';
+      }
+    }
+  };
+
   const boardGame = () => {
     const randomTokenDisplay = [];
     for (let i = 0; i < width * width; i++){
@@ -81,10 +98,11 @@ function App() {
       checkRowOfFour();
       checkColumnOfThree();
       checkRowOfThree();
+      movingIntoCaseBelow();
       setCurrentTokenDisplay([...currentTokenDisplay]);
     },100);
     return () => clearInterval(timer);
-  }, [checkColumnOfFour, checkRowOfFour, checkColumnOfThree, checkRowOfThree, currentTokenDisplay]);
+  }, [checkColumnOfFour, checkRowOfFour, checkColumnOfThree, checkRowOfThree, movingIntoCaseBelow, currentTokenDisplay]);
 
   return (
     <div className="App">

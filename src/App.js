@@ -12,6 +12,28 @@ function App() {
   const characterTokens =[batman, superman, aquaman, wonderWoman, flash, cyborg];
   const[currentTokenDisplay, setCurrentTokenDisplay] =useState([]);
 
+  const checkColumnOfFour = () => {
+    for (let i = 0; i < 39; i++){
+      const columnOfFour = [i, i + width, i + width * 2, i + width * 3];
+      const choosenColor = currentTokenDisplay[i];
+
+      if (columnOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
+        columnOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+      }
+    }
+  };
+
+  const checkColumnOfThree = () => {
+    for (let i = 0; i < 47; i++){
+      const columnOfThree = [i, i + width, i + width * 2];
+      const choosenColor = currentTokenDisplay[i];
+
+      if (columnOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor)){
+        columnOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+      }
+    }
+  };
+
   const boardGame = () => {
     const randomTokenDisplay = [];
     for (let i = 0; i < width * width; i++){
@@ -24,6 +46,15 @@ function App() {
   useEffect(() => {
     boardGame();
   }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      checkColumnOfFour();
+      checkColumnOfThree();
+      setCurrentTokenDisplay([...currentTokenDisplay]);
+    },100);
+    return () => clearInterval(timer);
+  }, [checkColumnOfFour, checkColumnOfThree, currentTokenDisplay]);
 
   return (
     <div className="App">

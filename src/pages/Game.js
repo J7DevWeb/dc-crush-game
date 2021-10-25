@@ -106,6 +106,7 @@ const Game = () => {
     };
   
     const dragEnd = () => {
+      if (tokenTargeted != null && tokenTargeted != null) {
       const tokenDragedId = parseInt(tokenDraged.getAttribute('data-id'));
       const tokenTargetedId = parseInt(tokenTargeted.getAttribute('data-id'));
   
@@ -133,6 +134,7 @@ const Game = () => {
         currentTokenDisplay[tokenDragedId] = tokenDraged.getAttribute('src');
         setCurrentTokenDisplay([...currentTokenDisplay]);
       }
+    }
     };
   
     const boardGame = () => {

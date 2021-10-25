@@ -63,6 +63,27 @@ body{
   text-decoration: underline;
 }
 
+@media only screen and (max-width: 600px) {
+  .game-board {
+    width: 280px;
+    height: 280px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .game-board .case {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .game-board .case img {
+    max-width: 35px;
+    max-height: 35px;
+  }
+}
+
 /* error page */
 .error {
   display: flex;
@@ -127,7 +148,6 @@ body{
 }
 
 .home .foreground:hover {
-  filter: blur(3px);
   transform: scale(1.1);
   transition: 7s;
 }

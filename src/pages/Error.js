@@ -6,7 +6,7 @@ const Error = () => {
         <div className="error">
             <Navigation />
             <h1>Cette page n'existe pas !!!</h1>
-            <img src="/logos/favicon.png" />
+            <img src="/logos/favicon.png" alt="Logo superman animé"/>
         </div>
     );
 };

@@ -17,64 +17,45 @@ const Game = () => {
     const[tokenDraged, setTokenDraged] = useState(null);
     const[tokenTargeted, setTokenTargeted] = useState(null);
     const[finalScore, setFinalScore] = useState(0);
-  
-    const checkColumnOfFour = () => {
-      for (let i = 0; i < 39; i++){
-        const columnOfFour = [i, i + width, i + width * 2, i + width * 3];
+    
+    const checkColumn = (loop, point) => {
+      for (let i = 0; i < loop; i++){
+        let columnOf;
+          if (point === 4){
+             columnOf = [i, i + width, i + width * 2, i + width * 3];
+          } else {
+             columnOf = [i, i + width, i + width * 2];
+          }
         const choosenColor = currentTokenDisplay[i];
         const isBlank = currentTokenDisplay[i] === '';
   
-        if (columnOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor && !isBlank)){
-          setFinalScore((score) => score + 4);
-          columnOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        if (columnOf.every(boardCase => currentTokenDisplay[boardCase] === choosenColor && !isBlank)){
+          setFinalScore((score) => score + point);
+          columnOf.forEach(boardCase => currentTokenDisplay[boardCase] = '');
           return true;
         }
       }
     };
-  
-    const checkRowOfFour = () => {
+
+    const checkRow = (point) => {
       for (let i = 0; i < 64; i++){
-        const rowOfFour = [i, i + 1, i + 2, i + 3];
+        let rowOf, notValid;
+          if(point === 4){
+            rowOf = [i, i + 1, i + 2, i + 3];
+            notValid = [5, 6, 7, 13, 14, 15, 21, 22, 23, 29, 30, 31, 37, 38, 39, 45, 46, 47, 53, 54, 55, 62, 63, 64];
+          } else{
+            rowOf = [i, i + 1, i + 2];
+            notValid = [6, 7, 14, 15, 22, 23, 30, 31, 38, 39, 46, 47, 54, 55, 63, 64];
+          }  
         const choosenColor = currentTokenDisplay[i];
         const isBlank = currentTokenDisplay[i] === '';
-        const notValid = [5, 6, 7, 13, 14, 15, 21, 22, 23, 29, 30, 31, 37, 38, 39, 45, 46, 47, 53, 54, 55, 62, 63, 64];
+        
   
         if (notValid.includes(i)) continue
   
-        if (rowOfFour.every(boardCase => currentTokenDisplay[boardCase] === choosenColor && !isBlank)){
-          setFinalScore((score) => score + 4);
-          rowOfFour.forEach(boardCase => currentTokenDisplay[boardCase] = '');
-          return true;
-        }
-      }
-    };
-  
-    const checkColumnOfThree = () => {
-      for (let i = 0; i < 47; i++){
-        const columnOfThree = [i, i + width, i + width * 2];
-        const choosenColor = currentTokenDisplay[i];
-        const isBlank = currentTokenDisplay[i] === '';
-  
-        if (columnOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor && !isBlank)){
-          setFinalScore((score) => score + 3);
-          columnOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
-          return true;
-        }
-      }
-    };
-  
-    const checkRowOfThree = () => {
-      for (let i = 0; i < 64; i++){
-        const rowOfThree = [i, i + 1, i + 2];
-        const choosenColor = currentTokenDisplay[i];
-        const isBlank = currentTokenDisplay[i] === '';
-        const notValid = [6, 7, 14, 15, 22, 23, 30, 31, 38, 39, 46, 47, 54, 55, 63, 64];
-  
-        if (notValid.includes(i)) continue
-  
-        if (rowOfThree.every(boardCase => currentTokenDisplay[boardCase] === choosenColor && !isBlank)){
-          setFinalScore((score) => score + 3);
-          rowOfThree.forEach(boardCase => currentTokenDisplay[boardCase] = '');
+        if (rowOf.every(boardCase => currentTokenDisplay[boardCase] === choosenColor && !isBlank)){
+          setFinalScore((score) => score + point);
+          rowOf.forEach(boardCase => currentTokenDisplay[boardCase] = '');
           return true;
         }
       }
@@ -121,10 +102,10 @@ const Game = () => {
       ];
   
       const validMove = validMoves.includes(tokenTargetedId);
-      const isColumnOfFour = checkColumnOfFour();
-      const isColumnOfThree = checkColumnOfThree();
-      const isRowOfFour = checkRowOfFour();
-      const isRowOfThree = checkRowOfThree();
+      const isColumnOfFour = checkColumn(39, 4);
+      const isColumnOfThree = checkColumn(47, 3);
+      const isRowOfFour = checkRow(4);
+      const isRowOfThree = checkRow(3);
   
       if (tokenTargetedId && validMove && (isColumnOfFour || isColumnOfThree || isRowOfFour || isRowOfThree)){
         setTokenDraged(null);
@@ -152,15 +133,15 @@ const Game = () => {
   
     useEffect(() => {
       const timer = setInterval(() => {
-        checkColumnOfFour();
-        checkRowOfFour();
-        checkColumnOfThree();
-        checkRowOfThree();
+        checkColumn(39,4);
+        checkRow(4);
+        checkColumn(47,3);
+        checkRow(3);
         movingIntoCaseBelow();
         setCurrentTokenDisplay([...currentTokenDisplay]);
       },100);
       return () => clearInterval(timer);
-    }, [checkColumnOfFour, checkRowOfFour, checkColumnOfThree, checkRowOfThree, movingIntoCaseBelow, currentTokenDisplay]);
+    }, [checkRow, checkColumn, movingIntoCaseBelow, currentTokenDisplay]);
   
 
     return (

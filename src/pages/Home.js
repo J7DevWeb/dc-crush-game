@@ -6,8 +6,8 @@ const Home = () => {
     return (
         <div className="home">
             <Navigation />
-            <img src="/images/Background.jpg" className="background"/>
-            <img src="/images/bvs-trinity.png" className="foreground"/>
+            <img src="/images/Background.jpg" alt="Image de Gotham city en arriére plan." className="background"/>
+            <img src="/images/bvs-trinity.png" alt="Batman, wonder woman et superman au premier plan." className="foreground"/>
         </div>
     );
 };
